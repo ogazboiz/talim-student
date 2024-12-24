@@ -1,32 +1,35 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import type { LoginPageProps, LoginFormData } from "./types/auth";
 
-export default function LoginPage({ onSubmit }: LoginPageProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<LoginFormData>({
+// Define the types for form data
+interface FormData {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+const LoginPage: React.FC = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
     rememberMe: false,
   });
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      if (onSubmit) {
-        await onSubmit(formData);
-      } else {
-        console.warn("onSubmit function is not provided.");
-      }
+      // Replace this with actual logic for form submission (e.g., API call)
+      console.log("Form submitted with data:", formData);
     } catch (error) {
       console.error("Login error:", error);
     } finally {
@@ -34,7 +37,7 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
     }
   };
 
-  const togglePasswordVisibility = (): void => {
+  const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
@@ -100,9 +103,7 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
                   type="button"
                   onClick={togglePasswordVisibility}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                  aria-label={
-                    showPassword ? "Hide password" : "Show password"
-                  }
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <svg
@@ -144,20 +145,32 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
               </div>
             </div>
 
+            {/* Remember Me Checkbox */}
             <div className="flex items-center space-x-2 pb-12">
+              {/* <Checkbox
+                id="remember"
+                checked={formData.rememberMe}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, rememberMe: checked }))
+                }
+              /> */}
               <Checkbox
                 id="remember"
                 checked={formData.rememberMe}
                 onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, rememberMe: !!checked }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    rememberMe: checked === true, // Ensure it is a boolean
+                  }))
                 }
-                
               />
+
               <Label htmlFor="remember" className="text-base font-normal text-[#030E18]">
                 Keep me signed in for easy access
               </Label>
             </div>
 
+            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full bg-[#003366] hover:bg-[#002B5B]/90 text-white h-[50px] rounded-lg text-lg font-medium"
@@ -181,4 +194,6 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;
