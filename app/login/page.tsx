@@ -1,70 +1,71 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent } from "react"
-import Image from "next/image"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import type { LoginPageProps, LoginFormData } from "./types/auth"
+import { useState, type FormEvent } from "react";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import type { LoginPageProps, LoginFormData } from "./types/auth";
 
 export default function LoginPage({ onSubmit }: LoginPageProps) {
-  const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
     rememberMe: false,
-  })
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      await onSubmit?.(formData)
+      if (onSubmit) {
+        await onSubmit(formData);
+      } else {
+        console.warn("onSubmit function is not provided.");
+      }
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("Login error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const togglePasswordVisibility = (): void => {
-    setShowPassword((prev) => !prev)
-  }
+    setShowPassword((prev) => !prev);
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row">
-      
-      {/* Left Column - Login Form */}
+      {/* Login Form */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
-      <div className="lg:absolute lg:top-16" >
-            <Image
-              src="/icons/login/tree.svg"
-              alt="Tree Logo"
-              width={64}
-              height={64}
-              className="h-[80px] w-[76.32px]"
-              priority
-            />
-          </div>
+        <div className="lg:absolute lg:top-16">
+          <Image
+            src="/icons/login/tree.svg"
+            alt="Tree Logo"
+            width={64}
+            height={64}
+            className="h-[80px] w-[76.32px]"
+            priority
+          />
+        </div>
         <div className="w-full max-w-[400px] space-y-8">
-          {/* Logo */}
-          
-
-          {/* Welcome Text */}
-          <div className="font-manrope  space-y-4 text-center">
-            <h1 className="text-3xl font-medium  text-3xll text-[#030E18]">Welcome back</h1>
+          <div className="font-manrope space-y-4 text-center">
+            <h1 className="text-3xl font-medium text-[#030E18]">Welcome back</h1>
             <p className="text-lg text-[#444444] font-normal">
               Sign in to continue your learning journey.
             </p>
           </div>
 
-          {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6 pt-[45px] font-manrope">
-            <div className="space-y-2 ">
-              <Label htmlFor="email" className="text-lg font-medium text-[#030E18]">Email</Label>
+            {/* Email Input */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-lg font-medium text-[#030E18]">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -78,8 +79,11 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
               />
             </div>
 
+            {/* Password Input */}
             <div className="space-y-2">
-              <Label htmlFor="password"  className="text-lg font-medium text-[#030E18]">Password</Label>
+              <Label htmlFor="password" className="text-lg font-medium text-[#030E18]">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -144,9 +148,10 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
               <Checkbox
                 id="remember"
                 checked={formData.rememberMe}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData((prev) => ({ ...prev, rememberMe: checked }))
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, rememberMe: !!checked }))
                 }
+                
               />
               <Label htmlFor="remember" className="text-base font-normal text-[#030E18]">
                 Keep me signed in for easy access
@@ -155,7 +160,7 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
 
             <Button
               type="submit"
-              className=" font-manrope w-full bg-[#003366] hover:bg-[#002B5B]/90  text-white h-[50px] rounded-lg text-lg font-medium "
+              className="w-full bg-[#003366] hover:bg-[#002B5B]/90 text-white h-[50px] rounded-lg text-lg font-medium"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign in"}
@@ -164,17 +169,16 @@ export default function LoginPage({ onSubmit }: LoginPageProps) {
         </div>
       </div>
 
-      {/* Right Column - Illustration */}
+      {/* Illustration */}
       <div className="flex-1 relative hidden lg:block">
         <Image
           src="/icons/login/school-illustration.svg"
           alt="High school illustration"
           fill
-          className="lg:w-[700px] lg:h-[500px] "
+          className="lg:w-[700px] lg:h-[500px]"
           priority
         />
       </div>
     </div>
-  )
+  );
 }
-
